@@ -6,29 +6,33 @@ defmodule Licor.Reader do
   alias Licor.Parser
 
   def start_link(_) do
-    port = get_port()
     GenServer.start_link(__MODULE__, %{port: port}, name: __MODULE__)
   end
 
   def init(%{port: port}) do
     IO.inspect port
     {:ok, pid} = Circuits.UART.start_link
+
+    {port, _} = Circuits.UART.enumerate
+                |> find_port(serial_number)
+
     Circuits.UART.open(pid, port, speed: 9600, framing: {Circuits.UART.Framing.Line, separator: "\r\n"})
     {:ok, %{uart: pid, port: port, listeners: []}}
   end
 
-  def get_port() do
-    {port, _} = Circuits.UART.enumerate
-                |> Enum.find({"LICOR_PORT", ''}, fn({_port, value}) -> correct_port?(value) end)
-
-    port
+  @doc """
+  Helper function to find the right serial port
+  given a serial number
+  """
+  def find_port(ports, serial_number) do
+    Enum.find(ports, {"LICOR_PORT", ''}, fn({_port, value}) -> correct_port?(value, serial_number) end)
   end
 
-  def correct_port?(%{serial_number: number}) do
-    number ==  "FTY3ZUKK"
+  defp correct_port?(%{serial_number: number}, serial) do
+    number ==  serial
   end
 
-  def correct_port?(%{}) do
+  defp correct_port?(%{}, serial) do
     false
   end
 
