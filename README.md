@@ -1,6 +1,6 @@
 # Licor
 
-**TODO: Add description**
+Start Reader by calling Licor.Reader.start_link(port)
 
 ## Installation
 
