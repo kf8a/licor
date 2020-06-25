@@ -5,12 +5,11 @@ defmodule Licor.Reader do
 
   alias Licor.Parser
 
-  def start_link(_) do
-    GenServer.start_link(__MODULE__, %{port: port}, name: __MODULE__)
+  def start_link(serial_number) do
+    GenServer.start_link(__MODULE__, %{port_serial: serial_number}, name: __MODULE__)
   end
 
-  def init(%{port: port}) do
-    IO.inspect port
+  def init(%{port_serial: serial_number}) do
     {:ok, pid} = Circuits.UART.start_link
 
     {port, _} = Circuits.UART.enumerate
