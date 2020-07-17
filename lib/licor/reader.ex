@@ -16,7 +16,7 @@ defmodule Licor.Reader do
                 |> find_port(serial_number)
 
     Circuits.UART.open(pid, port, speed: 9600, framing: {Circuits.UART.Framing.Line, separator: "\r\n"})
-    {:ok, %{uart: pid, port: port, listeners: []}}
+    {:ok, %{uart: pid, port: port}}
   end
 
   @doc """
@@ -35,22 +35,9 @@ defmodule Licor.Reader do
     false
   end
 
-
-  def register(client_pid) do
-    GenServer.cast(__MODULE__, {:register, client_pid})
-  end
-
-  def unregister(client_pid) do
-    GenServer.cast(__MODULE__, {:unregister, client_pid})
-  end
-
   def process_data(data, pid) do
     result = Parser.parse(data)
     Process.send(pid, {:parser, result}, [])
-  end
-
-  def broadcast(result, listeners) do
-    Enum.map(listeners, fn x -> Process.send(x, result, []) end)
   end
 
   def port, do: GenServer.call(__MODULE__, :port)
@@ -73,18 +60,7 @@ defmodule Licor.Reader do
   end
 
   def handle_info({:parser, result}, state) do
-    Task.start(Licor.Logger, :save, [result])
-    broadcast(result, state[:listeners])
-    {:noreply, state}
-  end
-
-  def handle_cast({:register, pid}, state) do
-    listeners = state[:listeners] ++ [ pid ]
-    {:noreply, Map.put(state, :listeners, listeners)}
-  end
-
-  def handle_cast({:unregister, pid}, state) do
-    listeners = List.delete(state[:listeners],   pid)
-    {:noreply, Map.put(state, :listeners, listeners)}
+    # Task.start(Licor.Logger, :save, [result])
+    {:noreply, Map.put(state, :result, result)}
   end
 end
