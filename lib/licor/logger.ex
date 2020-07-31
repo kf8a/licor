@@ -1,4 +1,7 @@
 defmodule Licor.Logger do
+  @moduledoc """
+  DEPRECATED write data to disk
+  """
   require Logger
 
   def save(msg) do

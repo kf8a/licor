@@ -1,5 +1,7 @@
-
 defmodule Licor.Parser do
+  @moduledoc """
+  Parse the xml comming back from the LICOR 820. The LICOR 840 has a slightly different xml format
+  """
 
   require Logger
   def parse(data) do
