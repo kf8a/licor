@@ -1,4 +1,7 @@
 defmodule Licor.Reader do
+  @moduledoc """
+  Connect to the licor via a serial port, and then read the data stream and hold on to the last value
+  """
   use GenServer
 
   require Logger

@@ -24,6 +24,8 @@ defmodule Licor.MixProject do
     [
       {:circuits_uart, "~> 1.3"},
       {:exml, "~> 0.1.1"},
+      {:credo, "~> 1.4", only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 1.0", only: [:dev], runtime: false}
     ]
   end
 end
