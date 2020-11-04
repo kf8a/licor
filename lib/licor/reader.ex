@@ -55,6 +55,26 @@ defmodule Licor.Reader do
     {:reply, port, state}
   end
 
+  def handle_info(:reconnect, state) do
+    :ok = Circuits.UART.close(state[:uart])
+    case Circuits.UART.open(state[:uart], state[:port], speed: 9600, framing: {Circuits.UART.Framing.Line, separator: "\r\n"}) do
+      :ok ->
+        :ok
+      {:error, msg} ->
+        Logger.error "licor reconnect :#{inspect msg}"
+        Process.send_after(self(), :reconnect, 500)
+    end
+    {:noreply, state}
+  end
+
+  def handle_info({:circuits_uart, port, {:error, msg}}, state) do
+    Logger.error "licor resetting port: #{inspect msg}"
+    if port == state[:port] do
+      Process.send_after(self(), :reconnect, 100)
+    end
+    {:noreply, state}
+  end
+
   def handle_info({:circuits_uart, port, data}, state) do
     if port == state[:port] do
       Task.start(__MODULE__, :process_data, [data, self()])
