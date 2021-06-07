@@ -1,5 +1,7 @@
 # Licor
 
+A reader/parser for the Licor 820 CO2 analyzer
+
 Start Reader by calling Licor.Reader.start_link(port)
 
 ## Installation
