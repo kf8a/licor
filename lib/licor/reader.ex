@@ -34,7 +34,7 @@ defmodule Licor.Reader do
     number ==  serial
   end
 
-  defp correct_port?(%{}, serial) do
+  defp correct_port?(%{}, _serial) do
     false
   end
 
