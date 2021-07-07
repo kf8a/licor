@@ -19,7 +19,7 @@ defmodule Licor.Reader do
                 |> find_port(serial_number)
 
     Circuits.UART.open(pid, port, speed: 9600, framing: {Circuits.UART.Framing.Line, separator: "\r\n"})
-    {:ok, %{uart: pid, port: port, result: 0}}
+    {:ok, %{uart: pid, port: port, result: %Licor{}}}
   end
 
   @doc """
