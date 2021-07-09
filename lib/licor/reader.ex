@@ -9,7 +9,7 @@ defmodule Licor.Reader do
   alias Licor.Parser
 
   def start_link(serial_number) do
-    GenServer.start_link(__MODULE__, %{port_serial: serial_number, result: 0}, name: __MODULE__)
+    GenServer.start_link(__MODULE__, %{port_serial: serial_number}, name: __MODULE__)
   end
 
   def init(%{port_serial: serial_number}) do
@@ -19,7 +19,7 @@ defmodule Licor.Reader do
                 |> find_port(serial_number)
 
     Circuits.UART.open(pid, port, speed: 9600, framing: {Circuits.UART.Framing.Line, separator: "\r\n"})
-    {:ok, %{uart: pid, port: port}}
+    {:ok, %{uart: pid, port: port, result: %Licor{}}}
   end
 
   @doc """
